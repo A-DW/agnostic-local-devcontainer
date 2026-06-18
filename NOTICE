@@ -1,0 +1,11 @@
+Risk-Free Next.js
+Copyright 2026
+
+This repository is licensed under the Apache License, Version 2.0.
+
+This repository brings together project code, configuration, and documentation
+for a Next.js development workflow using Docker-based runtime isolation and
+local editing tools.
+
+Third-party software, frameworks, and tools referenced by or used with this
+repository remain subject to their own respective licenses.
