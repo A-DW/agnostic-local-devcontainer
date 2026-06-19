@@ -85,6 +85,40 @@ npm install lucide-react framer-motion
 
 These provide a React icon library and lightweight animation support for client components.
 
+## Validation page
+
+After scaffolding the app and installing `lucide-react` and `framer-motion`, `web/app/page.tsx` was edited with the following validation component to confirm the stack was working end to end:
+
+```tsx
+"use client";
+
+import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+
+export default function Page() {
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-zinc-950 px-6 text-white">
+      <motion.div
+        initial={{ opacity: 0, y: 18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="w-full max-w-xl rounded-2xl border border-white/10 bg-white/5 p-8"
+      >
+        <h1 className="mb-3 text-3xl font-semibold">It's working</h1>
+        <p className="mb-6 text-zinc-400">
+          Next.js, Tailwind, Lucide, and Framer Motion are ready.
+        </p>
+        <button className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-black">
+          Continue <ArrowRight className="h-4 w-4" />
+        </button>
+      </motion.div>
+    </main>
+  );
+}
+```
+
+This file was edited after the scaffold was created; it was not introduced as a new repository file by the documentation update.
+
 ## Start the development server
 
 ```bash
