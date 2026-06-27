@@ -1,4 +1,4 @@
-# agnostic-local-devcontainer
+# Agnostic-Local-DevContainer
 
 A language-agnostic Dev Container template for isolated, reproducible, and convenient local development.
 
