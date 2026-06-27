@@ -8,26 +8,23 @@ All environment configuration lives in `.devcontainer/`:
 
 ```text
 .devcontainer/
-├── devcontainer.json   # Container features, VS Code settings, extensions, post-create commands
-├── Dockerfile          # Base image and installed tools
-└── post-create.sh      # Commands that run once after the container is created
+├── devcontainer.json      # Container settings, extensions, and lifecycle commands
+├── docker-compose.yml     # Service definition, volumes, ports, and environment
+├── Dockerfile             # Base image and installed tools
+└── post-create.sh         # Commands that run once after the container is created
 ```
 
 ## Node.js / Next.js / Vite
 
 ### Install Node.js in the container
 
-In `devcontainer.json`, add the Node.js feature:
+Use a Node.js base image directly in `Dockerfile`:
 
-```json
-"features": {
-  "ghcr.io/devcontainers/features/node:1": {
-    "version": "lts"
-  }
-}
+```dockerfile
+FROM mcr.microsoft.com/devcontainers/javascript-node:1-20-bookworm
 ```
 
-Or install directly in the `Dockerfile`:
+Or install via the package manager:
 
 ```dockerfile
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
@@ -39,7 +36,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
 In `post-create.sh`:
 
 ```bash
-if [ -f package.json ]; then
+if [ -f package-lock.json ]; then
+  npm ci
+elif [ -f package.json ]; then
   npm install
 fi
 ```
@@ -58,17 +57,7 @@ Add to `devcontainer.json` under `customizations.vscode.extensions`:
 
 ### Install Python in the container
 
-In `devcontainer.json`, add the Python feature:
-
-```json
-"features": {
-  "ghcr.io/devcontainers/features/python:1": {
-    "version": "3.12"
-  }
-}
-```
-
-Or install in the `Dockerfile`:
+In `Dockerfile`:
 
 ```dockerfile
 RUN apt-get update && apt-get install -y python3 python3-pip python3-venv
@@ -96,10 +85,11 @@ fi
 
 ## General tips
 
-- **Rebuild the container** after any change to `Dockerfile` or `devcontainer.json`:
-  ```
-  Dev Containers: Rebuild Container
+- **After any change to `Dockerfile`, `docker-compose.yml`, or `devcontainer.json`**, reset and rebuild the container:
+  ```bash
+  docker compose -f .devcontainer/docker-compose.yml down -v
+  docker compose -f .devcontainer/docker-compose.yml up -d
   ```
 - **`post-create.sh`** is the right place for one-time setup commands that should run automatically after the container is created.
-- **Extensions** installed in `devcontainer.json` are available inside the container only. They do not affect the host VS Code installation.
+- **VS Code extensions** declared in `devcontainer.json` apply when opening the container via the Dev Containers integration. They do not affect the host VS Code installation.
 - The `.gitignore` at the root is a multi-stack baseline. Review and extend it for your specific project.

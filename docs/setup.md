@@ -4,15 +4,15 @@ This page covers everything needed to get the Dev Container running on a new mac
 
 ## Prerequisites
 
-Install the following tools on the **host machine** before opening the container:
+Install the following on the **host machine** before starting the container:
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) — must be running before opening the container
-- [Visual Studio Code](https://code.visualstudio.com/)
-- [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) (`ms-vscode-remote.remote-containers`)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) — must be running before starting the container
+- A terminal
+- Any editor — [VS Code](https://code.visualstudio.com/) is recommended but not required
 
 No language runtimes, package managers, or project-specific tools need to be installed on the host. Everything runs inside the container.
 
-## Opening the container
+## Starting the container
 
 1. Clone the repository:
    ```bash
@@ -20,45 +20,41 @@ No language runtimes, package managers, or project-specific tools need to be ins
    cd agnostic-local-devcontainer
    ```
 
-2. Open the folder in VS Code:
+2. Start the container in the background:
    ```bash
-   code .
+   docker compose -f .devcontainer/docker-compose.yml up -d
    ```
 
-3. VS Code will detect the `.devcontainer/` folder and prompt **Reopen in Container**. Click it.
+   The container image will build on the first run. This takes a few minutes. Subsequent starts are fast.
 
-   Alternatively, open the Command Palette (`Cmd/Ctrl+Shift+P`) and run:
+3. Attach a shell inside the running container:
+   ```bash
+   docker exec -it devcontainer-app-1 bash
    ```
-   Dev Containers: Reopen in Container
-   ```
 
-4. The container image will build on first run. This takes a few minutes. Subsequent opens are fast.
-
-5. Once the container is open, the integrated terminal is running **inside** the container. The host filesystem is mounted at the repository root.
+   The shell opens at `/workspace`, which maps to the repository root on the host.
 
 ## Confirming the environment
 
-After the container opens, verify the environment from the terminal:
+After attaching a shell, verify the environment:
 
 ```bash
-# Confirm Docker is accessible from inside the container (if Docker-in-Docker is configured)
-docker --version
+# Confirm you are inside the container as the expected user
+whoami
 
 # Confirm Git is available
 git --version
 
-# Confirm Node.js is available (if installed in the container)
+# Confirm Node.js is available
 node --version
-
-# Confirm Python is available (if installed in the container)
-python3 --version
+npm --version
 ```
 
 The exact tools available depend on the container image defined in `.devcontainer/Dockerfile`.
 
 ## Starting a project
 
-Add or initialise your project files directly at the repository root. For example:
+Add or initialise your project files directly at the repository root from inside the container shell. For example:
 
 ```bash
 # Next.js
@@ -67,21 +63,20 @@ npx create-next-app@latest .
 # Vite
 npm create vite@latest .
 
-# Python
-python3 -m venv .venv && source .venv/bin/activate
-
 # Clone an existing project into the root
 git clone <project-url> .
 ```
 
 Project files coexist at the root alongside `.devcontainer/`, `docs/`, `.gitignore`, and `README.md`.
 
-## Rebuilding the container
+## Stopping and resetting the container
 
-If the container configuration changes (e.g. `Dockerfile` or `devcontainer.json` is updated), rebuild it:
+To stop the container and remove it along with its volumes (full reset):
 
+```bash
+docker compose -f .devcontainer/docker-compose.yml down -v
 ```
-Dev Containers: Rebuild Container
-```
 
-See [Troubleshooting](troubleshooting.md) if the build or reopen fails.
+Then run `up -d` again to start fresh. This is also the correct step after changing `Dockerfile`, `docker-compose.yml`, or `devcontainer.json`.
+
+See [Troubleshooting](troubleshooting.md) if the build or startup fails.

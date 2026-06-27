@@ -7,7 +7,8 @@ This page describes the permanent layout of the `agnostic-local-devcontainer` te
 ```text
 .
 ├── .devcontainer/          # Dev Container configuration
-│   ├── devcontainer.json   # Container features, settings, and extensions
+│   ├── devcontainer.json   # Container settings, extensions, and lifecycle commands
+│   ├── docker-compose.yml  # Service definition, volumes, ports, and environment
 │   ├── Dockerfile          # Base image and installed tools
 │   └── post-create.sh      # One-time setup commands run after container creation
 ├── docs/                   # Documentation
@@ -53,14 +54,15 @@ And a Python project would add:
 └── README.md
 ```
 
-This keeps the container configuration and project files in one unified workspace, which is the standard Dev Container model.
+This keeps the container configuration and project files in one unified workspace.
 
 ## .devcontainer/ in detail
 
 | File | Purpose |
 |---|---|
-| `devcontainer.json` | Declares the container image, features, VS Code extensions, settings, and lifecycle commands |
+| `devcontainer.json` | Declares the container image, user model, extensions, settings, and lifecycle commands |
+| `docker-compose.yml` | Defines the service, named volumes, port bindings, and environment variables |
 | `Dockerfile` | Defines the container image — base OS, installed runtimes, and tools |
-| `post-create.sh` | Shell script that runs once when the container is first created — used for dependency installs and environment setup |
+| `post-create.sh` | Shell script that runs once when the container is first created — used for ownership repair and dependency installs |
 
 See [Customization](customization.md) to adapt these files for a specific stack.
