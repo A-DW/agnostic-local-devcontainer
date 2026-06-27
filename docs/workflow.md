@@ -1,42 +1,42 @@
 # Workflow
 
-The recommended daily workflow is to edit files locally in Antigravity and run Node.js commands from inside the Docker container. Splitting editing from execution like this is easier to reason about and keeps the runtime environment isolated from the host machine.
+The daily development workflow using this template.
 
-## Daily process
+## The development loop
 
-1. Make sure the development container is running.
-2. Open `~/Development/CodingTest/web` locally in Antigravity.
-3. Enter the running container.
-4. Change into `/workspace/web`.
-5. Run the Next.js development server.
-6. Validate changes in the browser at `http://localhost:3000`.
+1. **Open the repo in VS Code** — Docker Desktop must be running.
+2. **Reopen in Container** — VS Code reconnects to the existing container or starts it.
+3. **Work from the integrated terminal** — all commands run inside the container.
+4. **Edit files normally** — the repository root is mounted into the container, so changes are reflected immediately on both sides.
+5. **Commit and push** — Git is available inside the container; commits are attributed normally.
 
-## Main commands
+## Key points
 
-Enter the running container:
+- All package installs, builds, and dev server commands run **inside the container**, not on the host.
+- The repository root is the working directory. Project files live here alongside the template files.
+- The host machine only needs Docker Desktop and VS Code — no runtimes or package managers required.
 
-```bash
-docker exec -it codingtest_devcontainer-app-1 bash
-```
+## Common commands
 
-Go to the project directory:
+### Container management
 
-```bash
-cd /workspace/web
-```
+| Action | Command Palette entry |
+|---|---|
+| Open in container | `Dev Containers: Reopen in Container` |
+| Rebuild container | `Dev Containers: Rebuild Container` |
+| Open new terminal inside container | `Terminal: New Terminal` |
 
-Start the development server:
-
-```bash
-npm run dev -- -H 0.0.0.0 -p 3000
-```
-
-Install additional packages when needed:
+### Git (inside container)
 
 ```bash
-npm install <package-name>
+git status
+git add .
+git commit -m "your message"
+git push
 ```
 
-## Validation step
+## Adding a project
 
-A simple client component was used during setup to confirm that Next.js, Tailwind CSS, Lucide React, and Framer Motion were all working together correctly. The test component used `"use client"`, a Lucide icon, and a Framer Motion animation block, which confirmed that the base environment was ready for page development.
+When using this template for a new project, initialise or clone the project at the repository root from inside the container terminal. See [Setup](setup.md) for examples.
+
+For stack-specific commands and tooling setup, see [Customization](customization.md).

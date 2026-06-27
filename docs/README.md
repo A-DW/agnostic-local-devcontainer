@@ -1,14 +1,21 @@
 # Documentation
 
-This directory contains the project documentation for `risk-free-nextjs`, covering the environment setup, development workflow, repository structure, and troubleshooting notes. In-repository documentation is commonly easier to maintain when it is split into focused Markdown files with a simple index page that links readers to the right topic quickly.
+This directory contains documentation for the `agnostic-local-devcontainer` template.
 
-## Contents
+## Pages
 
-- [`setup.md`](./setup.md) — full environment setup for Next.js in Docker with local Antigravity editing.
-- [`workflow.md`](./workflow.md) — day-to-day development process and common commands.
-- [`structure.md`](./structure.md) — repository layout and the purpose of key files and folders.
-- [`troubleshooting.md`](./troubleshooting.md) — problems encountered during setup and the resolutions used.
+| Page | Description |
+|---|---|
+| [Setup](setup.md) | Prerequisites, container setup, and first steps |
+| [Workflow](workflow.md) | Daily development workflow inside the container |
+| [Customization](customization.md) | Adapting the environment for Node, Next, Vite, or Python |
+| [Structure](structure.md) | Repository layout and file purposes |
+| [Troubleshooting](troubleshooting.md) | Common issues and resolutions |
 
-## Notes
+## Recommended reading order
 
-The documentation is intentionally organized as a small tree of topic-focused Markdown files instead of one long setup note. That structure matches common documentation guidance recommending a root docs index plus separate pages for installation, usage, and troubleshooting so readers can find the relevant information faster.
+1. [Setup](setup.md) — get the container running
+2. [Workflow](workflow.md) — understand the daily development loop
+3. [Customization](customization.md) — adapt the environment for your stack
+4. [Structure](structure.md) — understand what each file and folder does
+5. [Troubleshooting](troubleshooting.md) — reference when something goes wrong

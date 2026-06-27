@@ -1,33 +1,19 @@
-# Risk-Free Next.js
+# Agnostic-Local-DevContainer
 
-A Next.js website project developed with Antigravity locally and Node.js/npm isolated inside Docker.
+A language-agnostic Dev Container template for isolated, reproducible, and convenient local development.
 
-## Overview
+## What it is
 
-This repository contains a website project built with Next.js, React, Tailwind CSS, Lucide React, and Framer Motion. It also documents the development workflow used to edit files locally while keeping the JavaScript runtime and package management inside a Docker container.
+This repository provides a reusable local development environment built on [Dev Containers](https://containers.dev/). It is not a starter app or framework scaffold. The container setup is the product — a consistent, isolated workspace that can host any project regardless of language or framework.
 
-The current environment has been validated with a working development server and a test page rendered successfully in the browser.
+Project files for any given use case live directly at the repository root alongside `.devcontainer/` and `docs/`.
 
-## Why this setup
+## Why use it
 
-This repository uses a split development model:
-
-- Antigravity is used locally to edit project files.
-- Docker contains Node.js, npm, and the application runtime.
-- The website project lives in the `web/` subfolder.
-- The host machine does not need a local npm installation for day-to-day development.
-
-This approach keeps the host environment clean while preserving a practical and reproducible workflow.
-
-## Tech stack
-
-- Next.js
-- React
-- Tailwind CSS
-- Lucide React
-- Framer Motion
-- Docker
-- Antigravity
+- **Isolated** — dependencies, runtimes, and tooling live inside the container, not on the host machine
+- **Reproducible** — every team member and machine gets the same environment
+- **Secure** — experimentation happens inside a sandboxed container, not against the host system
+- **Convenient** — open the repo in VS Code and the environment is ready in seconds
 
 ## Repository structure
 
@@ -37,81 +23,46 @@ This approach keeps the host environment clean while preserving a practical and 
 │   ├── devcontainer.json
 │   ├── Dockerfile
 │   └── post-create.sh
-├── docs/                   # Setup notes and troubleshooting
-├── web/                    # Next.js application
-│   ├── app/
-│   ├── public/
-│   ├── package.json
-│   ├── tsconfig.json
-│   ├── next.config.ts
-│   └── ...
-├── .gitignore
+├── docs/                   # Documentation
+├── .gitignore              # Multi-stack baseline (Node, Next, Vite, Python)
 └── README.md
 ```
 
-The main application code lives in `web/`, while repository-level configuration and supporting documentation stay at the top level.
+When this template is used for a real project, that project's files are added directly at the root.
 
-## Prerequisites
+## Getting started
 
-Before working on this project, make sure the following are available:
+### Prerequisites
 
-- Docker installed and running
-- Antigravity installed locally
-- Access to the project repository on the host machine
-- A browser available to open `http://localhost:3000`
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (running)
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
-## Quick start
+### Steps
 
-1. Open the project locally in Antigravity:
-
-   ```text
-   ~/Development/CodingTest/web
-   ```
-
-2. Enter the running development container:
-
+1. Clone the repository:
    ```bash
-   docker exec -it <container-name> bash
+   git clone https://github.com/A-DW/agnostic-local-devcontainer.git
+   cd agnostic-local-devcontainer
    ```
-
-3. Go to the project directory inside the container:
-
+2. Open the folder in VS Code:
    ```bash
-   cd /workspace/web
+   code .
    ```
-
-4. Start the development server:
-
-   ```bash
-   npm run dev -- -H 0.0.0.0 -p 3000
-   ```
-
-5. Open the application in the browser:
-
-   ```text
-   http://localhost:3000
-   ```
-
-## Development workflow
-
-Use Antigravity locally to edit files in the `web/` folder. Run Node.js and npm commands from inside the Docker container. View the running application in the browser through the mapped local port.
-
-In practice, this means:
-
-- Edit locally.
-- Run commands in the container.
-- Validate changes in the browser.
-
-## Troubleshooting
-
-- If Antigravity cannot attach to the container, continue editing locally and run commands with `docker exec`.
-- If `create-next-app` conflicts with root-level files, create the application inside the `web/` subfolder.
-- If `npm audit` shows moderate vulnerabilities after installation, avoid using `npm audit fix --force` blindly.
+3. When prompted, select **Reopen in Container** — or open the Command Palette (`Cmd/Ctrl+Shift+P`) and run **Dev Containers: Reopen in Container**.
+4. Wait for the container to build. Once open, the terminal is running inside the container.
+5. Add or initialise your project files at the repository root.
 
 ## Documentation
 
-Additional project documentation is available in the repository documentation files, including setup notes, Docker and Dev Container configuration, troubleshooting details, and file-level explanations of the initial environment.
+| Page | Description |
+|---|---|
+| [Setup](docs/setup.md) | Prerequisites, container setup, and first steps |
+| [Workflow](docs/workflow.md) | Daily development workflow inside the container |
+| [Customization](docs/customization.md) | Adapting the environment for Node, Next, Vite, or Python |
+| [Structure](docs/structure.md) | Repository layout and file purposes |
+| [Troubleshooting](docs/troubleshooting.md) | Common issues and resolutions |
 
-## Status
+## License
 
-The development environment is working and has been validated with a running Next.js application. The project is currently in the base setup stage, with UI and page development continuing from this foundation.
+[GPL-3.0](LICENSE)
