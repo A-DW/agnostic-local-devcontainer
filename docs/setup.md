@@ -1,128 +1,87 @@
 # Setup
 
-This project uses a split workflow: Antigravity edits the files locally on the host, while Node.js, npm, and the Next.js runtime stay inside a Docker container. That approach keeps the host machine cleaner, keeps the environment reproducible, and avoids relying on Antigravity's less stable remote container integration.
+This page covers everything needed to get the Dev Container running on a new machine.
 
-## Goal
+## Prerequisites
 
-The goal of the setup is to support a modern Next.js project with TypeScript, Tailwind CSS, Lucide React, and Framer Motion without installing the JavaScript toolchain directly on the host. The final arrangement is local editing on the host with containerized execution and dependency management inside Docker.
+Install the following tools on the **host machine** before opening the container:
 
-## Container configuration
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) — must be running before opening the container
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) (`ms-vscode-remote.remote-containers`)
 
-### `.devcontainer/devcontainer.json`
+No language runtimes, package managers, or project-specific tools need to be installed on the host. Everything runs inside the container.
 
-```json
-{
-  "name": "antigravity-node-web",
-  "build": {
-    "dockerfile": "Dockerfile"
-  },
-  "workspaceFolder": "/workspace",
-  "remoteUser": "root",
-  "containerUser": "root",
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
-        "ms-vscode.vscode-typescript-next"
-      ],
-      "settings": {
-        "editor.formatOnSave": true,
-        "files.eol": "\n",
-        "terminal.integrated.defaultProfile.linux": "bash"
-      }
-    }
-  },
-  "postCreateCommand": "bash .devcontainer/post-create.sh",
-  "forwardPorts": [3000]
-}
-```
+## Opening the container
 
-Key points:
-- The workspace root inside the container is `/workspace`.
-- Both `remoteUser` and `containerUser` are set to `root` to avoid permission problems during setup.
-- Port `3000` is forwarded for the Next.js development server.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/A-DW/agnostic-local-devcontainer.git
+   cd agnostic-local-devcontainer
+   ```
 
-### `.devcontainer/Dockerfile`
+2. Open the folder in VS Code:
+   ```bash
+   code .
+   ```
 
-```Dockerfile
-FROM mcr.microsoft.com/devcontainers/javascript-node:1-20-bookworm
+3. VS Code will detect the `.devcontainer/` folder and prompt **Reopen in Container**. Click it.
 
-WORKDIR /workspace
+   Alternatively, open the Command Palette (`Cmd/Ctrl+Shift+P`) and run:
+   ```
+   Dev Containers: Reopen in Container
+   ```
 
-CMD ["sleep", "infinity"]
-```
+4. The container image will build on first run. This takes a few minutes. Subsequent opens are fast.
 
-This image provides the containerized Node.js toolchain used by the project while keeping the container alive for repeated development use.
+5. Once the container is open, the integrated terminal is running **inside** the container. The host filesystem is mounted at the repository root.
 
-### `.devcontainer/post-create.sh`
+## Confirming the environment
+
+After the container opens, verify the environment from the terminal:
 
 ```bash
-#!/usr/bin/env bash
-set -e
-node -v
-npm -v
+# Confirm Docker is accessible from inside the container (if Docker-in-Docker is configured)
+docker --version
+
+# Confirm Git is available
+git --version
+
+# Confirm Node.js is available (if installed in the container)
+node --version
+
+# Confirm Python is available (if installed in the container)
+python3 --version
 ```
 
-This script validates that `node` and `npm` are available after the container is created.
+The exact tools available depend on the container image defined in `.devcontainer/Dockerfile`.
 
-## Application scaffolding
+## Starting a project
 
-The Next.js application is created in the `web/` subfolder instead of the repository root. This separation avoids conflicts with `.devcontainer/` and other root-level files, which can cause `create-next-app` to refuse project creation in a non-empty directory.
+Add or initialise your project files directly at the repository root. For example:
 
 ```bash
-cd /workspace/web
-npx create-next-app@latest . --ts --tailwind --eslint --app --use-npm --import-alias "@/*"
+# Next.js
+npx create-next-app@latest .
+
+# Vite
+npm create vite@latest .
+
+# Python
+python3 -m venv .venv && source .venv/bin/activate
+
+# Clone an existing project into the root
+git clone <project-url> .
 ```
 
-## Additional packages
+Project files coexist at the root alongside `.devcontainer/`, `docs/`, `.gitignore`, and `README.md`.
 
-After scaffolding, the following packages were added:
+## Rebuilding the container
 
-```bash
-npm install lucide-react framer-motion
+If the container configuration changes (e.g. `Dockerfile` or `devcontainer.json` is updated), rebuild it:
+
+```
+Dev Containers: Rebuild Container
 ```
 
-These provide a React icon library and lightweight animation support for client components.
-
-## Validation page
-
-After scaffolding the app and installing `lucide-react` and `framer-motion`, `web/app/page.tsx` was edited with the following validation component to confirm the stack was working end to end:
-
-```tsx
-"use client";
-
-import { ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
-
-export default function Page() {
-  return (
-    <main className="flex min-h-screen items-center justify-center bg-zinc-950 px-6 text-white">
-      <motion.div
-        initial={{ opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35 }}
-        className="w-full max-w-xl rounded-2xl border border-white/10 bg-white/5 p-8"
-      >
-        <h1 className="mb-3 text-3xl font-semibold">It's working</h1>
-        <p className="mb-6 text-zinc-400">
-          Next.js, Tailwind, Lucide, and Framer Motion are ready.
-        </p>
-        <button className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-black">
-          Continue <ArrowRight className="h-4 w-4" />
-        </button>
-      </motion.div>
-    </main>
-  );
-}
-```
-
-This file was edited after the scaffold was created; it was not introduced as a new repository file by the documentation update.
-
-## Start the development server
-
-```bash
-npm run dev -- -H 0.0.0.0 -p 3000
-```
-
-Using `0.0.0.0` allows the app running in the container to be reached from the host at `http://localhost:3000`.
+See [Troubleshooting](troubleshooting.md) if the build or reopen fails.

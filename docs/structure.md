@@ -1,41 +1,66 @@
-# Structure
+# Repository structure
 
-The repository is organized so that environment configuration lives at the top level while the actual Next.js application lives in `web/`. Organizing related material into clear directories improves readability and makes it easier for contributors to understand where to work and where supporting documentation belongs.
+This page describes the permanent layout of the `agnostic-local-devcontainer` template and explains where project files belong.
 
-## Repository layout
+## Permanent template files
 
 ```text
 .
 ├── .devcontainer/          # Dev Container configuration
-│   ├── devcontainer.json
-│   ├── Dockerfile
-│   └── post-create.sh
-├── docs/                   # Setup notes and troubleshooting
-├── web/                    # Next.js application
-│   ├── app/
-│   ├── public/
-│   ├── package.json
-│   ├── tsconfig.json
-│   ├── next.config.ts
-│   └── ...
+│   ├── devcontainer.json   # Container features, settings, and extensions
+│   ├── Dockerfile          # Base image and installed tools
+│   └── post-create.sh      # One-time setup commands run after container creation
+├── docs/                   # Documentation
+│   ├── README.md           # Docs index
+│   ├── setup.md            # Prerequisites and container setup
+│   ├── workflow.md         # Daily development workflow
+│   ├── customization.md    # Adapting the environment for different stacks
+│   ├── structure.md        # This file
+│   └── troubleshooting.md  # Common issues and resolutions
+├── .gitignore              # Multi-stack baseline (Node, Next, Vite, Python)
+└── README.md               # Repository overview
+```
+
+## Where project files live
+
+When this template is used for a real project, that project's files are added directly at the **repository root**, alongside the template files above. There is no `web/`, `workspace/`, `app/`, or other subdirectory abstraction.
+
+For example, a Next.js project would add:
+
+```text
+.
+├── .devcontainer/
+├── docs/
+├── app/                    # Next.js app directory
+├── public/
+├── package.json
+├── tsconfig.json
+├── next.config.ts
 ├── .gitignore
 └── README.md
 ```
 
-The main application code lives in `web/`, while repository-level configuration and supporting documentation stay at the top level.
+And a Python project would add:
 
-## Key files in `web/`
+```text
+.
+├── .devcontainer/
+├── docs/
+├── src/                    # Python source
+├── tests/
+├── requirements.txt
+├── .gitignore
+└── README.md
+```
 
-- `app/layout.tsx` — root application layout and global style import.
-- `app/globals.css` — global styles and Tailwind integration.
-- `app/page.tsx` — initial homepage and early validation page.
-- `package.json` — scripts and project dependencies.
-- `tsconfig.json` — TypeScript project configuration.
-- `next-env.d.ts` — Next.js type references.
-- `postcss.config.mjs` — Tailwind PostCSS integration.
-- `next.config.ts` — central Next.js configuration entry point.
-- `eslint.config.mjs` — ESLint configuration from the scaffold.
+This keeps the container configuration and project files in one unified workspace, which is the standard Dev Container model.
 
-## Why the app lives in `web/`
+## .devcontainer/ in detail
 
-The application was intentionally created in a dedicated subfolder because creating it at the repository root caused conflicts with existing root-level content such as `.devcontainer/`. Keeping the app in `web/` separates environment tooling from application code and makes the repository easier to evolve over time.
+| File | Purpose |
+|---|---|
+| `devcontainer.json` | Declares the container image, features, VS Code extensions, settings, and lifecycle commands |
+| `Dockerfile` | Defines the container image — base OS, installed runtimes, and tools |
+| `post-create.sh` | Shell script that runs once when the container is first created — used for dependency installs and environment setup |
+
+See [Customization](customization.md) to adapt these files for a specific stack.

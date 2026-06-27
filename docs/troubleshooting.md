@@ -1,43 +1,59 @@
 # Troubleshooting
 
-This page documents the main issues encountered during the initial environment setup and the resolutions that proved practical. Keeping troubleshooting notes in a dedicated page is a common documentation pattern because it separates recurring support knowledge from installation or usage instructions.
+Common issues when setting up or using the Dev Container, and how to resolve them.
 
-## `create-next-app` conflict at the repository root
+## Docker is not running
 
-### Problem
+**Symptom:** VS Code shows an error like `Cannot connect to Docker daemon` or the Reopen in Container prompt does not appear.
 
-Creating the application directly in `/workspace` failed because `create-next-app` detected conflicting existing content such as `.devcontainer/` and `node_modules/`.
+**Resolution:** Start Docker Desktop and wait until the Docker icon in the system tray shows it is running. Then try reopening in the container.
 
-### Resolution
+## Container fails to build
 
-Keep `.devcontainer/` at the repository root and create the Next.js application inside a dedicated `web/` subfolder instead.
+**Symptom:** The container build fails with an error during the image build step.
 
-## Antigravity remote attach instability
+**Resolution:**
+1. Open the build log in VS Code (`Show Log` in the notification).
+2. Identify the failing step in the `Dockerfile` or `devcontainer.json`.
+3. Fix the error, then run **Dev Containers: Rebuild Container**.
 
-### Problem
+Common causes: a `RUN` command in the `Dockerfile` fails due to a missing package name or network issue during build.
 
-The container itself was working, but Antigravity's remote connection to the running container was unstable during attach attempts.
+## Container opens but tools are missing
 
-### Resolution
+**Symptom:** The container opens but expected tools (e.g. Node, Python, Git) are not available in the terminal.
 
-Use Antigravity locally on the bind-mounted files and use `docker exec` to run commands in the container. This produced a simpler and more reliable workflow.
+**Resolution:** The tool is likely not installed in the container image. Add it to the `Dockerfile` or via a feature in `devcontainer.json`. See [Customization](customization.md). After making changes, run **Dev Containers: Rebuild Container**.
 
-## Permission issues with the container user
+## post-create.sh did not run
 
-### Problem
+**Symptom:** Dependencies were not installed or setup commands did not execute after the container was created.
 
-Using the `node` user during Dev Container setup caused permission errors during `chown` operations on temporary setup files.
+**Resolution:**
+1. Confirm `post-create.sh` is referenced in `devcontainer.json` under `postCreateCommand`.
+2. Confirm the script has execute permissions: `chmod +x .devcontainer/post-create.sh`.
+3. Run **Dev Containers: Rebuild Container** to trigger the script again from a fresh container state.
 
-### Resolution
+## Changes to devcontainer.json or Dockerfile are not reflected
 
-Set both `remoteUser` and `containerUser` to `root` in `.devcontainer/devcontainer.json`.
+**Symptom:** After editing container configuration files, the environment still behaves as before.
 
-## Moderate `npm audit` warnings
+**Resolution:** Reopening the container reuses the existing image. To apply configuration changes, a rebuild is required:
+```
+Dev Containers: Rebuild Container
+```
 
-### Problem
+## File permission issues inside the container
 
-Moderate vulnerability warnings appeared in transitive dependencies during the initial installation process.
+**Symptom:** Commands fail with `Permission denied` errors on files in the repository root.
 
-### Resolution
+**Resolution:** This usually means the container user does not own the mounted files. Check the `Dockerfile` for the user configuration, or add a `postCreateCommand` in `devcontainer.json` to fix ownership:
+```bash
+sudo chown -R $(whoami) /workspaces/agnostic-local-devcontainer
+```
 
-Do not apply `npm audit fix --force` blindly during early setup. The project was allowed to proceed because the warnings did not block execution, and force-fixing JavaScript dependency trees can introduce unwanted breaking changes.
+## Port not accessible on the host
+
+**Symptom:** A dev server running inside the container is not reachable in the host browser.
+
+**Resolution:** Ensure the port is forwarded. VS Code usually auto-forwards ports when a server starts. If not, open the **Ports** panel in VS Code (`Cmd/Ctrl+Shift+P` → `Focus on Ports View`) and add the port manually.
